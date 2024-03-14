@@ -2,6 +2,8 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -20,7 +22,9 @@ public class ProjectFrame extends JFrame{
     private JButton nextBt;
     private JButton saveBt;
     private JPanel panel;
+    private JTextField fundsText;
     private int index;
+    private BigDecimal total = new BigDecimal(0);
     private JFileChooser fc = new JFileChooser(".");
     private List<workProject> projectList = new ArrayList<>();
     private JMenuBar mainMenu = new JMenuBar();
@@ -28,8 +32,10 @@ public class ProjectFrame extends JFrame{
             private JMenuItem addBtn = new JMenuItem("Přidej další");
         private JMenu staticticMenu = new JMenu("Statistika");
             private  JMenuItem staBtn = new JMenuItem("Statistika");
+            private int myRating;
 
-    private boolean addable;
+
+
     public ProjectFrame(){
 
         initWindow();
@@ -42,6 +48,11 @@ public class ProjectFrame extends JFrame{
 
         update();
     }
+    public int getMyRating(){
+        if (radioBt1.isSelected()) myRating = 1;
+        if (radioBt2.isSelected()) myRating = 2;
+        if (radioBt3.isSelected()) myRating = 3;
+    }
 
     public static void main(String[] args) {
         ProjectFrame frame = new ProjectFrame();
@@ -51,6 +62,7 @@ public class ProjectFrame extends JFrame{
         setVisible(true);
         setTitle("Projekty");
         setSize(400, 500);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         ButtonGroup group = new ButtonGroup();
         group.add(radioBt1);
@@ -60,6 +72,13 @@ public class ProjectFrame extends JFrame{
         nextBt.addActionListener(e -> move(true));
         prevBt.addActionListener(e -> move(false));
         saveBt.addActionListener(e -> saveFile());
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                save();
+            }
+        });
     }
     public void initMenu(){
         setJMenuBar(mainMenu);
@@ -71,7 +90,22 @@ public class ProjectFrame extends JFrame{
         staticticMenu.add(staBtn);
 
         addBtn.addActionListener(e -> addProject());
-        staBtn.addActionListener(e -> JOptionPane.showMessageDialog(this, "Celkové náklady" + projectList.get(index).getFunds()));
+        staBtn.addActionListener(e -> JOptionPane.showMessageDialog(this, "Celkové náklady: " + totalFunds()));
+    }
+    public void save(){
+        projectList.get(index).setName(nameText.getText());
+        projectList.get(index).setCount(Integer.parseInt(numText.getText()));
+        projectList.get(index).setDone(doneCheck.isSelected());
+        projectList.get(index).setFunds(new BigDecimal(fundsText.getText()));
+        projectList.get(index).setRating(getMyRating());
+        //projectList.get(index)
+    }
+    public BigDecimal totalFunds(){
+
+        for(workProject project : projectList){
+            total = total.add(project.getFunds());
+        }
+        return total;
     }
     public void update(){
         nameText.setText(projectList.get(index).getName());
@@ -87,7 +121,7 @@ public class ProjectFrame extends JFrame{
             case 3:
                 radioBt3.setSelected(true);
         }
-
+        fundsText.setText(String.valueOf(projectList.get(index).getFunds()));
         //nameText.addActionListener(e -> editable = true);
 
 
@@ -102,8 +136,13 @@ public class ProjectFrame extends JFrame{
         }
     }
     public void addProject(){
-        projectList.add(new workProject("---",0, false, null, 1, null));
+        if (isEdited()) {
+            projectList.add(new workProject("---", 0, false, null, 1, null));
+        } else {
+            JOptionPane.showMessageDialog(this, "You need to change the current new file");
+        }
     }
+
     public void writer(File file){
         try (Writer wr = new BufferedWriter(new FileWriter(file))){
             wr.append(String.valueOf(textToSave()));
@@ -122,11 +161,20 @@ public class ProjectFrame extends JFrame{
         if (!projectList.isEmpty()){
             if (right & index+1 < projectList.size()){
                 index++;
+
                 update();
             } else if (!right & index >= 1) {
                 index--;
+
                 update();
             }
         }
     }
+    public boolean isEdited() {
+        return !nameText.getText().equals("---") || !numText.getText().equals("0") || !dateText.getText().equals("null") || !fundsText.getText().equals("null");
+
+    }
+
 }
+
+
