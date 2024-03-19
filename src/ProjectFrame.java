@@ -169,10 +169,12 @@ public class ProjectFrame extends JFrame{
         if (!projectList.isEmpty()){
             if (right & index+1 < projectList.size()){
                 index++;
+                save();
 
                 update();
             } else if (!right & index >= 1) {
                 index--;
+                save();
 
                 update();
             }
