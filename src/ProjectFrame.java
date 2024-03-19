@@ -1,6 +1,5 @@
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -25,14 +24,14 @@ public class ProjectFrame extends JFrame{
     private JTextField fundsText;
     private int index;
     private BigDecimal total = new BigDecimal(0);
-    private JFileChooser fc = new JFileChooser(".");
-    private List<workProject> projectList = new ArrayList<>();
-    private JMenuBar mainMenu = new JMenuBar();
-        private JMenu projectMenu = new JMenu("Project");
-            private JMenuItem addBtn = new JMenuItem("Přidej další");
-        private JMenu staticticMenu = new JMenu("Statistika");
-            private  JMenuItem staBtn = new JMenuItem("Statistika");
-            private int myRating;
+    private final JFileChooser fc = new JFileChooser(".");
+    private final List<workProject> projectList = new ArrayList<>();
+    private final JMenuBar mainMenu = new JMenuBar();
+        private final JMenu projectMenu = new JMenu("Project");
+            private final JMenuItem addBtn = new JMenuItem("Přidej další");
+        private final JMenu statisticMenu = new JMenu("Statistika");
+            private final JMenuItem staBtn = new JMenuItem("Statistika");
+            private int myRating = 0;
 
 
 
@@ -41,7 +40,6 @@ public class ProjectFrame extends JFrame{
         initWindow();
         initMenu();
 
-
         projectList.add(new workProject("Weby", 2, false, LocalDate.now(), 3, new BigDecimal(10000)));
         projectList.add(new workProject("Němčina", 1, true, LocalDate.now(), 3, new BigDecimal(100)));
         projectList.add(new workProject("Matematika", 2, false, LocalDate.now(), 1, new BigDecimal(2500)));
@@ -49,9 +47,11 @@ public class ProjectFrame extends JFrame{
         update();
     }
     public int getMyRating(){
+        //int myRating = 0;
         if (radioBt1.isSelected()) myRating = 1;
         if (radioBt2.isSelected()) myRating = 2;
         if (radioBt3.isSelected()) myRating = 3;
+        return myRating;
     }
 
     public static void main(String[] args) {
@@ -73,9 +73,16 @@ public class ProjectFrame extends JFrame{
         prevBt.addActionListener(e -> move(false));
         saveBt.addActionListener(e -> saveFile());
 
+        /*addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                save();
+            }
+        });*/
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                System.out.println("window closed");
                 save();
             }
         });
@@ -84,10 +91,10 @@ public class ProjectFrame extends JFrame{
         setJMenuBar(mainMenu);
 
         mainMenu.add(projectMenu);
-        mainMenu.add(staticticMenu);
+        mainMenu.add(statisticMenu);
 
         projectMenu.add(addBtn);
-        staticticMenu.add(staBtn);
+        statisticMenu.add(staBtn);
 
         addBtn.addActionListener(e -> addProject());
         staBtn.addActionListener(e -> JOptionPane.showMessageDialog(this, "Celkové náklady: " + totalFunds()));
@@ -128,6 +135,7 @@ public class ProjectFrame extends JFrame{
     }
 
     public void saveFile(){
+        save();
        fc.setFileFilter(new FileNameExtensionFilter("Text", "txt"));
         int result = fc.showSaveDialog(this);
         if (result == JFileChooser.APPROVE_OPTION){
@@ -171,7 +179,7 @@ public class ProjectFrame extends JFrame{
         }
     }
     public boolean isEdited() {
-        return !nameText.getText().equals("---") || !numText.getText().equals("0") || !dateText.getText().equals("null") || !fundsText.getText().equals("null");
+        return !nameText.getText().equals("---") || !numText.getText().equals("0") || !dateText.getText().equals("null") || !fundsText.getText().equals("null") || getMyRating()==0;
 
     }
 
