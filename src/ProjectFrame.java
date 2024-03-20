@@ -25,7 +25,7 @@ public class ProjectFrame extends JFrame{
     private int index;
     private BigDecimal total = new BigDecimal(0);
     private final JFileChooser fc = new JFileChooser(".");
-    private final List<workProject> projectList = new ArrayList<>();
+    private final List<WorkProject> projectList = new ArrayList<>();
     private final JMenuBar mainMenu = new JMenuBar();
         private final JMenu projectMenu = new JMenu("Project");
             private final JMenuItem addBtn = new JMenuItem("Přidej další");
@@ -40,9 +40,9 @@ public class ProjectFrame extends JFrame{
         initWindow();
         initMenu();
 
-        projectList.add(new workProject("Weby", 2, false, LocalDate.now(), 3, new BigDecimal(10000)));
-        projectList.add(new workProject("Němčina", 1, true, LocalDate.now(), 3, new BigDecimal(100)));
-        projectList.add(new workProject("Matematika", 2, false, LocalDate.now(), 1, new BigDecimal(2500)));
+        projectList.add(new WorkProject("Weby", 2, false, LocalDate.now(), 3, new BigDecimal(10000)));
+        projectList.add(new WorkProject("Němčina", 1, true, LocalDate.now(), 3, new BigDecimal(100)));
+        projectList.add(new WorkProject("Matematika", 2, false, LocalDate.now(), 1, new BigDecimal(2500)));
 
         update();
     }
@@ -69,6 +69,7 @@ public class ProjectFrame extends JFrame{
         group.add(radioBt2);
         group.add(radioBt3);
 
+
         nextBt.addActionListener(e -> move(true));
         prevBt.addActionListener(e -> move(false));
         saveBt.addActionListener(e -> saveFile());
@@ -94,10 +95,10 @@ public class ProjectFrame extends JFrame{
         mainMenu.add(statisticMenu);
 
         projectMenu.add(addBtn);
-        statisticMenu.add(staBtn);
+        //statisticMenu.add(staBtn);
 
         addBtn.addActionListener(e -> addProject());
-        staBtn.addActionListener(e -> JOptionPane.showMessageDialog(this, "Celkové náklady: " + totalFunds()));
+        statisticMenu.addActionListener(e -> JOptionPane.showMessageDialog(this, "Celkové náklady: " + totalFunds()));
     }
     public void save(){
         projectList.get(index).setName(nameText.getText());
@@ -109,7 +110,7 @@ public class ProjectFrame extends JFrame{
     }
     public BigDecimal totalFunds(){
 
-        for(workProject project : projectList){
+        for(WorkProject project : projectList){
             total = total.add(project.getFunds());
         }
         return total;
@@ -145,7 +146,7 @@ public class ProjectFrame extends JFrame{
     }
     public void addProject(){
         if (isEdited()) {
-            projectList.add(new workProject("---", 0, false, null, 1, null));
+            projectList.add(new WorkProject("---", 0, false, null, 1, null));
         } else {
             JOptionPane.showMessageDialog(this, "You need to change the current new file");
         }
@@ -160,7 +161,7 @@ public class ProjectFrame extends JFrame{
     }
     public StringBuilder textToSave(){
         StringBuilder text = new StringBuilder();
-        for (workProject project: projectList){
+        for (WorkProject project: projectList){
             text.append(project.getName()).append("#").append(project.getCount()).append("#").append(project.getFunds()).append("#").append(project.getRating()).append("#").append(project.getStartDate()).append("#").append(project.isDone()).append("\n");
         }
         return text;

@@ -1,7 +1,7 @@
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class workProject {
+public class WorkProject {
     private String name;
     private int count;
     private boolean done;
@@ -58,7 +58,7 @@ public class workProject {
         this.rating = rating;
     }
 
-    public workProject(String name, int count, boolean done, LocalDate startDate, int rating, BigDecimal funds) {
+    public WorkProject(String name, int count, boolean done, LocalDate startDate, int rating, BigDecimal funds) {
         this.name = name;
         this.count = count;
         this.done = done;
